@@ -1,7 +1,8 @@
 {
-  "name": "app-platform-demo-frontend",
+  "name": "abyush-pi-assistant",
   "version": "0.1.0",
   "private": true,
+   "description": "AI chatbot for Pi users to learn about KYC, Mainnet, Wallet, apps, and more — with multilingual support including Hausa.",
   "dependencies": {
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
