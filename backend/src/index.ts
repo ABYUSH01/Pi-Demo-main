@@ -17,14 +17,12 @@ import mountUserEndpoints from './handlers/users';
 import "./types/session";
 
 const dbName = env.mongo_db_name;
-const mongoUri = `mongodb://${env.mongo_host}/${dbName}`;
+// Gyara: Canza zuwa mongodb+srv don MongoDB Atlas, haɗa username da password cikin URI
+const mongoUri = `mongodb+srv://${env.mongo_user}:${env.mongo_password}@${env.mongo_host}/${dbName}?retryWrites=true&w=majority&authSource=admin`;
+// Gyara: Cire auth options saboda yanzu suna cikin URI
 const mongoClientOptions = {
-  authSource: "admin",
-  auth: {
-    username: env.mongo_user,
-    password: env.mongo_password,
-  },
-}
+  // An cire auth saboda yana cikin URI
+};
 
 
 //
