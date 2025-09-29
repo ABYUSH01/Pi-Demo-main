@@ -78,6 +78,15 @@ app.use('/payments', paymentsRouter);
 const userRouter = express.Router();
 mountUserEndpoints(userRouter);
 app.use('/user', userRouter);
+import mountChatbotEndpoints from './chatbot';
+
+// ...
+
+// Chatbot endpoint under /chatbot:
+const chatbotRouter = express.Router();
+chatbotRouter.use("/", mountChatbotEndpoints);
+app.use("/chatbot", chatbotRouter);
+
 
 // Hello World page to check everything works:
 app.get('/', async (_, res) => {
