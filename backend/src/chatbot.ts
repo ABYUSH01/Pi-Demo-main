@@ -75,7 +75,7 @@ router.post("/ask", async (req, res) => {
     "I don’t have an exact answer. Please check the official Pi app or blog.minepi.com for updates.";
 
   for (const fact of knowledge) {
-    if (question.toLowerCase().includes(fact.key)) {
+    if (question && question.toLowerCase().includes(fact.key)) {
       answer = fact.answer;
       break;
     }
