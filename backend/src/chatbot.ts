@@ -79,7 +79,7 @@ router.post("/ask", async (req, res) => {
     if (question && question.toLowerCase().includes(fact.key)) {
       answer = fact.answer;
       break;
-    }
+    };
   }
 
   // Detect language of user question
