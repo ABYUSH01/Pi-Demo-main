@@ -8,6 +8,7 @@ const router = Router();
 const knowledge = [
   {
     welcome: "👋 I’m ABYUSH, your Pi Ecosystem Assistant. I’m here to help you explore the Pi Network — including Mainnet, Wallet, KYC, Apps, Consensus Value, Utility & more. 🌍 You can ask!"
+  },
   {
     key: "pi network",
     answer: "Pi Network is a digital currency project founded by a team of Stanford graduates in 2019. It allows users to mine Pi coins through their mobile phones without draining battery."
