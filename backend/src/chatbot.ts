@@ -1,13 +1,15 @@
 import { Router } from "express";
-import franc from "franc"; // detect language
-import translate from "@vitalets/google-translate-api"; // translation
+import franc from "franc";
+import translate from "@vitalets/google-translate-api";
+import axios from "axios";
 
 const router = Router();
 
 // Knowledge base (asali a English kawai don sauki)
 const knowledge = [
   {
-    welcome: "👋 I’m ABYUSH, your Pi Ecosystem Assistant. I’m here to help you explore the Pi Network — including Mainnet, Wallet, KYC, Apps, Consensus Value, Utility & more. 🌍 You can ask!"
+    key: "welcome",
+    answer: "👋 I'm ABYUSH, your Pi Ecosystem Assistant. I'm here to help you explore the Pi Network — including Mainnet, Wallet, KYC, Apps, Consensus Value, Utility & more. 🌍 You can ask!"
   },
   {
     key: "pi network",
@@ -35,7 +37,7 @@ const knowledge = [
   },
   {
     key: "core team",
-    answer: "The Core Team leads development but Pi’s future is in the hands of Pioneers through governance tools like Pi DAO."
+    answer: "The Core Team leads development but Pi's future is in the hands of Pioneers through governance tools like Pi DAO."
   },
   {
     key: "whitepaper",
@@ -50,6 +52,48 @@ const knowledge = [
     answer: "Users should follow official announcements via the Pi app home screen or blog.minepi.com."
   }
 ];
+
+// Web search function tare da Serper.dev
+async function searchWeb(query: string): Promise<string> {
+  try {
+    const apiKey = process.env.SERPER_API_KEY;
+    
+    if (!apiKey) {
+      return "Search service is not configured properly.";
+    }
+
+    const response = await axios.post(
+      'https://google.serper.dev/search',
+      {
+        q: query,
+        gl: 'us',
+        hl: 'en'
+      },
+      {
+        headers: {
+          'X-API-KEY': apiKey,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    const results = response.data.organic?.slice(0, 3) || [];
+    
+    if (results.length === 0) {
+      return "I couldn't find any relevant information about this topic.";
+    }
+
+    let summary = "🔍 **Search Results:**\n\n";
+    results.forEach((result: any, index: number) => {
+      summary += `${index + 1}. **${result.title}**\n${result.snippet}\n${result.link ? `🔗 ${result.link}\n` : ''}\n`;
+    });
+
+    return summary;
+  } catch (error: any) {
+    console.error("Web search error:", error.response?.data || error.message);
+    return "I encountered an error while searching the web. Please try again later.";
+  }
+}
 
 // Memory tracker
 const userQuestions: Record<string, { count: number; date: string }> = {};
@@ -72,20 +116,28 @@ router.post("/ask", async (req, res) => {
   userQuestions[userId].count++;
 
   // Default answer
-  let answer =
-    "I don’t have an exact answer. Please check the official Pi app or blog.minepi.com for updates.";
+  let answer = "I don't have an exact answer. Please check the official Pi app or blog.minepi.com for updates.";
 
+  // Check knowledge base first
+  let foundInKnowledge = false;
   for (const fact of knowledge) {
     if (question && question.toLowerCase().includes(fact.key)) {
       answer = fact.answer;
+      foundInKnowledge = true;
       break;
-    };
+    }
   }
 
-  // Detect language of user question
-  const langCode = franc(question, { minLength: 1 }) as string;// e.g. "hau" for Hausa, "eng" for English, "arb" for Arabic, "cmn" for Chinese
+  // If not found in knowledge, search web
+  if (!foundInKnowledge) {
+    const webResults = await searchWeb(question);
+    answer = `I couldn't find a specific answer in my knowledge base.\n\n${webResults}\n\n*Note: These are external search results.*`;
+  }
+
+  // Translate to user's language
+  const langCode = franc(question) as string;
   try {
-    if (langCode !== "eng") {
+    if (langCode && langCode !== "eng") {
       const translated = await translate(answer, { to: langCode });
       answer = translated.text;
     }
