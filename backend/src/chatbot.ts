@@ -2,6 +2,7 @@ import { Router } from "express";
 import franc from "franc";
 import translate from "@vitalets/google-translate-api";
 import axios from "axios";
+import env from "./env";   // <<<< an haɗa env.ts don amfani da variables
 
 const router = Router();
 
@@ -37,7 +38,7 @@ async function webSearch(query: string): Promise<string> {
       { q: query },
       {
         headers: {
-          "X-API-KEY": process.env.SERPER_API_KEY || "",
+          "X-API-KEY": env.serper_api_key,   // <<<< an gyara daga process.env zuwa env.ts
           "Content-Type": "application/json"
         }
       }
@@ -76,7 +77,7 @@ router.post("/chat", async (req, res) => {
     let reply =
       "❓ Sorry, I don’t have info about that yet. Let me search Google for you...";
 
-    // Check knowledge base
+    // Knowledge base check
     for (const item of knowledge) {
       if (userMsg.includes(item.key)) {
         reply = item.answer;
