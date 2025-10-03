@@ -83,7 +83,7 @@ router.post("/ask", async (req, res) => {
   }
 
   // Detect language of user question
-  const langCode = franc(question, { minLength: 1 });// e.g. "hau" for Hausa, "eng" for English, "arb" for Arabic, "cmn" for Chinese
+  const langCode = franc(question, { minLength: 1 }) as string;// e.g. "hau" for Hausa, "eng" for English, "arb" for Arabic, "cmn" for Chinese
   try {
     if (langCode !== "eng") {
       const translated = await translate(answer, { to: langCode });
