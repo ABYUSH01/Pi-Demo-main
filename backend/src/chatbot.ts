@@ -135,7 +135,7 @@ router.post("/ask", async (req, res) => {
   }
 
   // Translate to user's language
-  const langCode = franc(question) as string;
+  import * as franc from "franc";
   try {
     if (langCode && langCode !== "eng") {
       const translated = await translate(answer, { to: langCode });
