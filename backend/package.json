@@ -7,8 +7,7 @@
     "name": "Pi Core Team"
   },
   "scripts": {
-    "build": "tsc --skipLibCheck",
-    "start": "node dist/index.js"
+  "start": "ts-node-dev --respawn --transpile-only src/index.ts"
   },
   "dependencies": {
     "franc": "^6.0.0",
