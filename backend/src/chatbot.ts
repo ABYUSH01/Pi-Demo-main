@@ -2,9 +2,12 @@ import { Router } from "express";
 import franc from "franc";
 import translate from "@vitalets/google-translate-api";
 import axios from "axios";
-import env from "./env";   // <<<< an haɗa env.ts don amfani da variables
+// import env from "./env";   // CIRE WANNAN LAYI
 
 const router = Router();
+
+// ===== Yi amfani da environment variables kai tsaye =====
+const serperApiKey = process.env.SERPER_API_KEY || '';
 
 // ===== Knowledge Base =====
 const knowledge = [
@@ -38,7 +41,7 @@ async function webSearch(query: string): Promise<string> {
       { q: query },
       {
         headers: {
-          "X-API-KEY": env.serper_api_key,   // <<<< an gyara daga process.env zuwa env.ts
+          "X-API-KEY": serperApiKey,   // YANZU YANA AMFANI DA RENDER ENVIRONMENT
           "Content-Type": "application/json"
         }
       }
@@ -75,7 +78,7 @@ router.post("/chat", async (req, res) => {
 
     // Default reply
     let reply =
-      "❓ Sorry, I don’t have info about that yet. Let me search Google for you...";
+      "❓ Sorry, I don't have info about that yet. Let me search Google for you...";
 
     // Knowledge base check
     for (const item of knowledge) {
