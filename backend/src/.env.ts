@@ -1,4 +1,8 @@
-import dotenv from 'dotenv';
+// Maimakon './env', yi amfani da masu canjin muhalli kai tsaye
+const config = {
+    NODE_ENV: process.env.NODE_ENV,
+    // Saka sauran masu canjin da ake buƙata
+};import dotenv from 'dotenv';
 
 console.log("NODE_ENV: " + process.env.NODE_ENV);
 
