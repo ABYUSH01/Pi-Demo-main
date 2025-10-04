@@ -1,8 +1,4 @@
-// Maimakon './env', yi amfani da masu canjin muhalli kai tsaye
-const config = {
-    NODE_ENV: process.env.NODE_ENV,
-    // Saka sauran masu canjin da ake buƙata
-};import dotenv from 'dotenv';
+import dotenv from 'dotenv';
 
 console.log("NODE_ENV: " + process.env.NODE_ENV);
 
@@ -13,9 +9,7 @@ if (result.error) {
     console.error(".env file not found. This is an error condition in development. Additional error is logged below");
     throw result.error;
   }
-
-  // In production, environment variables are injected into the container environment. We should not even have
-  // a .env file inside the running container.
+  // In production, environment variables are injected into the container environment
 }
 
 interface Environment {
@@ -27,7 +21,7 @@ interface Environment {
   mongo_user: string,
   mongo_password: string,
   frontend_url: string,
-serper_api_key: string   // <<<<< added
+  serper_api_key: string
 }
 
 const env: Environment = {
@@ -39,7 +33,7 @@ const env: Environment = {
   mongo_user: process.env.MONGODB_USERNAME || '',
   mongo_password: process.env.MONGODB_PASSWORD || '',
   frontend_url: process.env.FRONTEND_URL || 'http://localhost:3314',
-serper_api_key: process.env.SERPER_API_KEY || ''   // <<<<< added
+  serper_api_key: process.env.SERPER_API_KEY || ''
 };
 
 export default env;
