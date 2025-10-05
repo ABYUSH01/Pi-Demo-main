@@ -1,17 +1,19 @@
 import mongoose from "mongoose";
-import env from "./env";  // yana karanta variables daga env.ts
+import env from "./env";
 
-// GINA CONNECTION STRING
-const mongoUri = `mongodb+srv://${env.mongo_user}:${env.mongo_password}@${env.mongo_host}/${env.mongo_db_name}?retryWrites=true&w=majority`;
+const connectDB = async (): Promise<void> => {
+  try {
+    const mongoURI = `mongodb+srv://${env.mongo_user}:${env.mongo_password}@${env.mongo_host}/${env.mongo_db_name}?retryWrites=true&w=majority`;
 
-console.log("Connecting to MongoDB Atlas...");
+    await mongoose.connect(mongoURI, {
+      serverSelectionTimeoutMS: 5000,
+    });
 
-mongoose.connect(mongoUri)
-  .then(() => console.log("✅ Successfully connected to MongoDB Atlas"))
-  .catch((err) => {
-    console.error("❌ MongoDB connection error:");
-    console.error(err);
-  });
+    console.log("✅ MongoDB connected successfully");
+  } catch (error: any) {
+    console.error("❌ MongoDB connection error:", error.message);
+    process.exit(1);
+  }
+};
 
-// Export don sauran files su iya amfani da shi
-export default mongoose;
+export default connectDB;
