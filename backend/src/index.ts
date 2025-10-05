@@ -1,3 +1,4 @@
+import "./database";
 import fs from 'fs';
 import path from 'path';
 import cors from 'cors';
