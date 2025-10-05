@@ -1,14 +1,15 @@
 import mongoose from "mongoose";
-import env from "./env";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const mongoURI =
+  process.env.MONGO_URI ||
+  `mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_CLUSTER}/?retryWrites=true&w=majority&appName=${process.env.MONGODB_DBNAME}`;
 
 const connectDB = async (): Promise<void> => {
   try {
-    const mongoURI = `mongodb+srv://${env.mongo_user}:${env.mongo_password}@${env.mongo_host}/${env.mongo_db_name}?retryWrites=true&w=majority`;
-
-    await mongoose.connect(mongoURI, {
-      serverSelectionTimeoutMS: 5000,
-    });
-
+    await mongoose.connect(mongoURI);
     console.log("✅ MongoDB connected successfully");
   } catch (error: any) {
     console.error("❌ MongoDB connection error:", error.message);
