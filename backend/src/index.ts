@@ -70,9 +70,14 @@ const chatbotRouter = express.Router();
 chatbotRouter.use("/", mountChatbotEndpoints);
 app.use("/chatbot", chatbotRouter);
 
-// 🌍 Test endpoint
+// 🌍 Root endpoint
 app.get("/", async (_, res) => {
   res.status(200).send({ message: "✅ Abyush Pi Assistant Backend is running successfully!" });
+});
+
+// 🧪 Test endpoint (new)
+app.get("/test", (req, res) => {
+  res.status(200).send("✅ Abyush Pi Assistant backend is live and responding from /test route!");
 });
 
 // 🚀 Boot server
