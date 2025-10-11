@@ -3,9 +3,19 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const mongoURI =
-  process.env.MONGO_URI ||
-  `mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_CLUSTER}/?retryWrites=true&w=majority&appName=${process.env.MONGODB_DBNAME}`;
+const user = process.env.MONGODB_USER;
+const pass = process.env.MONGODB_PASSWORD;
+const cluster = process.env.MONGODB_CLUSTER;
+const dbName = process.env.MONGODB_DBNAME;
+
+if (!user || !pass || !cluster) {
+  console.error("❌ MongoDB ENV variables missing. Check Render environment settings.");
+  process.exit(1);
+}
+
+const mongoURI = `mongodb+srv://${user}:${pass}@${cluster}/${dbName}?retryWrites=true&w=majority`;
+
+console.log("🔍 Connecting to MongoDB cluster:", cluster);
 
 const connectDB = async (): Promise<void> => {
   try {
