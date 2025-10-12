@@ -1,4 +1,5 @@
 // src/index.ts
+import "./config/database"; // <── database connection
 import fs from "fs";
 import path from "path";
 import cors from "cors";
@@ -7,12 +8,18 @@ import cookieParser from "cookie-parser";
 import session from "express-session";
 import logger from "morgan";
 import MongoStore from "connect-mongo";
+import { MongoClient } from "mongodb";
 import env from "./environments";
-import connectDB from "./config/database"; // 🟢 an haɗa daga file ɗin database.ts
 import mountPaymentsEndpoints from "./handlers/payments";
 import mountUserEndpoints from "./handlers/users";
 import mountChatbotEndpoints from "./chatbot";
 import "./types/session";
+
+// 🧩 Database config
+const dbName = env.mongo_db_name;
+const mongoUri = `mongodb+srv://${env.mongo_user}:${env.mongo_password}@${env.mongo_host}/${dbName}?retryWrites=true&w=majority&authSource=admin`;
+
+const mongoClientOptions = {};
 
 // ⚙️ Initialize express app
 const app: express.Application = express();
@@ -35,9 +42,7 @@ app.use(
 );
 app.use(cookieParser());
 
-// 🗄️ Session store using MongoDB (same connection URI)
-const mongoUri = `mongodb+srv://${env.mongo_user}:${env.mongo_password}@${env.mongo_host}/${env.mongo_db_name}?retryWrites=true&w=majority`;
-
+// 🗄️ Session store in MongoDB
 app.use(
   session({
     secret: env.session_secret,
@@ -45,14 +50,10 @@ app.use(
     saveUninitialized: false,
     store: MongoStore.create({
       mongoUrl: mongoUri,
-      dbName: env.mongo_db_name,
+      mongoOptions: mongoClientOptions,
+      dbName: dbName,
       collectionName: "user_sessions",
     }),
-    cookie: {
-      maxAge: 1000 * 60 * 60 * 24, // 1 day
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-    },
   })
 );
 
@@ -72,12 +73,12 @@ chatbotRouter.use("/", mountChatbotEndpoints);
 app.use("/chatbot", chatbotRouter);
 
 // 🌍 Root endpoint
-app.get("/", (_, res) => {
+app.get("/", async (_, res) => {
   res.status(200).send({ message: "✅ Abyush Pi Assistant Backend is running successfully!" });
 });
 
 // 🧪 Test endpoint
-app.get("/test", (_, res) => {
+app.get("/test", (req, res) => {
   res.status(200).send("✅ Abyush Pi Assistant backend is live and responding from /test route!");
 });
 
@@ -85,7 +86,16 @@ app.get("/test", (_, res) => {
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, async () => {
-  await connectDB(); // 🟢 Wannan ne ke haɗa da MongoDB ɗinka ta database.ts
+  try {
+    const client = await MongoClient.connect(mongoUri, mongoClientOptions);
+    const db = client.db(dbName);
+    app.locals.orderCollection = db.collection("orders");
+    app.locals.userCollection = db.collection("users");
+    console.log("✅ Connected to MongoDB on:", mongoUri);
+  } catch (err) {
+    console.error("❌ Connection to MongoDB failed:", err);
+  }
+
   console.log(`🚀 Server listening on port ${PORT}`);
   console.log(`🌐 CORS: Frontend URL = ${env.frontend_url}`);
 });
