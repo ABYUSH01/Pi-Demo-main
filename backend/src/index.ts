@@ -10,7 +10,8 @@ import MongoStore from "connect-mongo";
 import { MongoClient } from "mongodb";
 
 import env from "./environments";
-import connectDB from "./config/database"; // ✅ connect database function
+import connectDB from "./config/database";
+connectDB();
 import mountPaymentsEndpoints from "./handlers/payments";
 import mountUserEndpoints from "./handlers/users";
 import mountChatbotEndpoints from "./chatbot";
