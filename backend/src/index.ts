@@ -86,19 +86,14 @@ app.get("/", async (_, res) => {
 app.get("/test", (req, res) => {
   res.status(200).send("✅ Abyush Pi Assistant backend is live and responding from /test route!");
 });
-
 // 🚀 Boot server
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, async () => {
-  try {
-    const client = await MongoClient.connect(mongoUri, mongoClientOptions);
-    const db = client.db(dbName);
-    app.locals.orderCollection = db.collection("orders");
-    app.locals.userCollection = db.collection("users");
-    console.log("✅ Connected to MongoDB via MongoClient");
-  } catch (err) {
-    console.error("❌ Connection to MongoDB failed:", err);
+  console.log(`🚀 Server listening on port ${PORT}`);
+  console.log(`🌐 CORS: Frontend URL = ${env.frontend_url}`);
+});
+
   }
 
   console.log(`🚀 Server listening on port ${PORT}`);
