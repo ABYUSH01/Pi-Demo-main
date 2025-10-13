@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import env from "./env";  // yana karanta variables daga env.ts
 
 // GINA CONNECTION STRING
-const mongoUri = `mongodb+srv://${env.mongo_user}:${env.mongo_password}@${env.mongo_host}/${env.mongo_db_name}?retryWrites=true&w=majority`;
+const mongoUri = `mongodb+srv://abyush017_db_user:<db_password>@abyushpiassistanrcluste.3xmik6q.mongodb.net/?retryWrites=true&w=majority&appName=AbyushPiAssistanrCluster`;
 
 console.log("Connecting to MongoDB Atlas...");
 
