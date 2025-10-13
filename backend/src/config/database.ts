@@ -19,7 +19,7 @@ if (!user || !pass || !cluster) {
 }
 
 // Gina MongoDB URI
-const mongoURI = `mongodb+srv://${user}:${pass}@${cluster}/${dbName}?retryWrites=true&w=majority`;
+const mongoURI = `mongodb+srv://abyush017_db_user:<db_password>@abyushpiassistanrcluste.3xmik6q.mongodb.net/?retryWrites=true&w=majority&appName=AbyushPiAssistanrCluster`;
 
 // Debug log
 console.log("🔍 Connecting to MongoDB cluster:", cluster);
