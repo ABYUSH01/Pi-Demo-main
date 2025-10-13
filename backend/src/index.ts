@@ -1,19 +1,23 @@
 // src/index.ts
-import "./config/database"; // <── database connection
+import express from "express";
 import fs from "fs";
 import path from "path";
 import cors from "cors";
-import express from "express";
 import cookieParser from "cookie-parser";
 import session from "express-session";
 import logger from "morgan";
 import MongoStore from "connect-mongo";
 import { MongoClient } from "mongodb";
+
 import env from "./environments";
+import connectDB from "./config/database"; // ✅ connect database function
 import mountPaymentsEndpoints from "./handlers/payments";
 import mountUserEndpoints from "./handlers/users";
 import mountChatbotEndpoints from "./chatbot";
 import "./types/session";
+
+// 🟢 Kira database connection nan
+connectDB();
 
 // 🧩 Database config
 const dbName = env.mongo_db_name;
@@ -91,7 +95,7 @@ app.listen(PORT, async () => {
     const db = client.db(dbName);
     app.locals.orderCollection = db.collection("orders");
     app.locals.userCollection = db.collection("users");
-    console.log("✅ Connected to MongoDB on:", mongoUri);
+    console.log("✅ Connected to MongoDB via MongoClient");
   } catch (err) {
     console.error("❌ Connection to MongoDB failed:", err);
   }
