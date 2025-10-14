@@ -7,7 +7,6 @@ import cookieParser from "cookie-parser";
 import session from "express-session";
 import logger from "morgan";
 import MongoStore from "connect-mongo";
-import { MongoClient } from "mongodb";
 
 import env from "./environments";
 import connectDB from "./config/database"; // import connectDB function
@@ -20,17 +19,16 @@ import "./types/session";
   // 🔗 Connect to MongoDB before starting the server
   await connectDB();
 
-  const dbName = env.mongo_db_name;
-  const mongoUri = `mongodb+srv://${env.mongo_user}:${env.mongo_password}@${env.mongo_host}/${dbName}?retryWrites=true&w=majority`;
-
-  const mongoClientOptions = {};
   const app: express.Application = express();
 
   // 🧾 Log requests
   app.use(logger("dev"));
   app.use(
     logger("common", {
-      stream: fs.createWriteStream(path.join(__dirname, "..", "log", "access.log"), { flags: "a" }),
+      stream: fs.createWriteStream(
+        path.join(__dirname, "..", "log", "access.log"),
+        { flags: "a" }
+      ),
     })
   );
 
@@ -51,11 +49,11 @@ import "./types/session";
       resave: false,
       saveUninitialized: false,
       store: MongoStore.create({
-        mongoUrl: mongoUri,
-        mongoOptions: mongoClientOptions,
-        dbName: dbName,
+        mongoUrl: `mongodb+srv://${env.mongo_user}:${env.mongo_password}@${env.mongo_host}/${env.mongo_db_name}?retryWrites=true&w=majority`,
+        dbName: env.mongo_db_name,
         collectionName: "user_sessions",
       }),
+      cookie: { maxAge: 1000 * 60 * 60 * 24 * 7 }, // 7 days
     })
   );
 
@@ -75,19 +73,22 @@ import "./types/session";
   app.use("/chatbot", chatbotRouter);
 
   // 🌍 Root endpoint
-  app.get("/", async (_, res) => {
-    res.status(200).send({ message: "✅ Abyush Pi Assistant Backend is running successfully!" });
+  app.get("/", (_, res) => {
+    res.status(200).send({
+      message: "✅ Abyush Pi Assistant Backend is running successfully!",
+    });
   });
 
   // 🧪 Test endpoint
-  app.get("/test", (req, res) => {
-    res.status(200).send("✅ Abyush Pi Assistant backend is live and responding from /test route!");
+  app.get("/test", (_, res) => {
+    res
+      .status(200)
+      .send("✅ Abyush Pi Assistant backend is live and responding from /test route!");
   });
 
   // 🚀 Boot server
-  const PORT = process.env.PORT || 3000;
-
-  app.listen(PORT, async () => {
+  const PORT = env.port || process.env.PORT || 3000;
+  app.listen(PORT, () => {
     console.log(`🚀 Server listening on port ${PORT}`);
     console.log(`🌐 CORS: Frontend URL = ${env.frontend_url}`);
   });
