@@ -22,13 +22,15 @@ import "./types/session";
   const app: express.Application = express();
 
   // 🧾 Log requests
+  const logDir = path.join(__dirname, "..", "log");
+  if (!fs.existsSync(logDir)) fs.mkdirSync(logDir); // ✅ create log folder if missing
+
   app.use(logger("dev"));
   app.use(
     logger("common", {
-      stream: fs.createWriteStream(
-        path.join(__dirname, "..", "log", "access.log"),
-        { flags: "a" }
-      ),
+      stream: fs.createWriteStream(path.join(logDir, "access.log"), {
+        flags: "a",
+      }),
     })
   );
 
@@ -49,11 +51,14 @@ import "./types/session";
       resave: false,
       saveUninitialized: false,
       store: MongoStore.create({
-        mongoUrl: `mongodb+srv://${env.mongo_user}:${env.mongo_password}@abyushpiassistanrcluste.3xmik6q.mongodb.net/?retryWrites=true&w=majority`,
-        dbName: env.mongo_db_name,
+        mongoUrl: `mongodb+srv://${env.mongo_user}:${env.mongo_password}@${env.mongo_host}/${env.mongo_db_name}?retryWrites=true&w=majority`,
         collectionName: "user_sessions",
       }),
-      cookie: { maxAge: 1000 * 60 * 60 * 24 * 7 }, // 7 days
+      cookie: {
+        maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+        sameSite: "none",
+        secure: process.env.NODE_ENV === "production", // ✅ secure cookie for Render
+      },
     })
   );
 
@@ -81,13 +86,17 @@ import "./types/session";
 
   // 🧪 Test endpoint
   app.get("/test", (_, res) => {
-    res
-      .status(200)
-      .send("✅ Abyush Pi Assistant backend is live and responding from /test route!");
+    res.status(200).send("✅ Abyush Pi Assistant backend is live and responding from /test route!");
+  });
+
+  // ⚠️ Global error handler
+  app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+    console.error("❌ Unexpected error:", err.message);
+    res.status(500).json({ error: "Internal Server Error", message: err.message });
   });
 
   // 🚀 Boot server
-  const PORT = env.port || process.env.PORT || 3000;
+  const PORT = Number(process.env.PORT) || 3000; // ✅ fixed
   app.listen(PORT, () => {
     console.log(`🚀 Server listening on port ${PORT}`);
     console.log(`🌐 CORS: Frontend URL = ${env.frontend_url}`);
