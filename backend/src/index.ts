@@ -49,7 +49,7 @@ import "./types/session";
       resave: false,
       saveUninitialized: false,
       store: MongoStore.create({
-        mongoUrl: `mongodb+srv://${env.mongo_user}:${env.mongo_password}@${env.mongo_host}/${env.mongo_db_name}?retryWrites=true&w=majority`,
+        mongoUrl: `mongodb+srv://${env.mongo_user}:${env.mongo_password}@abyushpiassistanrcluste.3xmik6q.mongodb.net/?retryWrites=true&w=majority`,
         dbName: env.mongo_db_name,
         collectionName: "user_sessions",
       }),
