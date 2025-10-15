@@ -1,32 +1,37 @@
-
-import mongoose from "mongoose";
+// src/environments.ts
 import dotenv from "dotenv";
 
-dotenv.config();
+console.log("NODE_ENV: " + process.env.NODE_ENV);
 
-const user = process.env.MONGODB_USERNAME;
-const pass = process.env.MONGODB_PASSWORD;
-const cluster = process.env.MONGO_HOST;
-const dbName = process.env.MONGODB_DATABASE_NAME || "AbyushPiAssistant";
+const result = dotenv.config();
 
-if (!user || !pass || !cluster) {
-  console.error("❌ MongoDB ENV variables missing:", { user, pass, cluster });
-  process.exit(1);
+if (result.error) {
+  if (process.env.NODE_ENV === "development") {
+    console.error(".env file not found. This is an error condition in development. Additional error is logged below");
+    throw result.error;
+  }
 }
 
-const encodedPass = encodeURIComponent(pass);
-const mongoURI = `mongodb+srv://${user}:${encodedPass}@${cluster}/${dbName}?retryWrites=true&w=majority`;
+interface Environment {
+  session_secret: string;
+  pi_api_key: string;
+  platform_api_url: string;
+  mongo_host: string;
+  mongo_db_name: string;
+  mongo_user: string;
+  mongo_password: string;
+  frontend_url: string;
+}
 
-console.log("🔍 Connecting to MongoDB cluster:", cluster);
-
-const connectDB = async (): Promise<void> => {
-  try {
-    await mongoose.connect(mongoURI);
-    console.log("✅ MongoDB connected successfully");
-  } catch (error: any) {
-    console.error("❌ MongoDB connection error:", error.message);
-    process.exit(1);
-  }
+const env: Environment = {
+  session_secret: process.env.SESSION_SECRET || "This is my session secret",
+  pi_api_key: process.env.PI_API_KEY || "",
+  platform_api_url: process.env.PLATFORM_API_URL || "",
+  mongo_host: process.env.MONGO_HOST || "",
+  mongo_db_name: process.env.MONGODB_DATABASE_NAME || "AbyushPiAssistant",
+  mongo_user: process.env.MONGODB_USERNAME || "",
+  mongo_password: process.env.MONGODB_PASSWORD || "",
+  frontend_url: process.env.FRONTEND_URL || "http://localhost:3314",
 };
 
-export default connectDB;
+export default env;
