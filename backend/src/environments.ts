@@ -27,7 +27,7 @@ const env: Environment = {
   session_secret: process.env.SESSION_SECRET || "This is my session secret",
   pi_api_key: process.env.PI_API_KEY || "",
   platform_api_url: process.env.PLATFORM_API_URL || "",
-  mongo_host: process.env.MONGO_HOST || "",
+  mongo_host: process.env.MONGO_HOST || "abyushpiassistanrcluste.3xmik6q.mongodb.net",
   mongo_db_name: process.env.MONGODB_DATABASE_NAME || "AbyushPiAssistant",
   mongo_user: process.env.MONGODB_USERNAME || "",
   mongo_password: process.env.MONGODB_PASSWORD || "",
